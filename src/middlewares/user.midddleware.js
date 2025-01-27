@@ -2,7 +2,6 @@ import passport from "passport";
 
 export const isUserAuthenticated = (req,res,next) => {
   passport.authenticate('jwt',(err,details)=>{
-    console.log(err,details);
     if(!details){
       res.status(401).send({message: 'User Unauthenticated'})
     }

@@ -5,19 +5,15 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // define association here
-      User.hasMany(models.Post,{
-        foreignKey:'userId'
-      })
-      User.hasMany(models.Conversation,{
-        foreignKey: 'participantOneId'
-      })
-      User.hasMany(models.Conversation,{
-        foreignKey: 'participantTwoId'
-      })
-      User.hasMany(models.Apply,{
-        foreignKey:'userId'
-      })
+      User.hasMany(models.Games, {
+        as: 'createdChallenges',
+        foreignKey: 'player_one',
+      });
+
+      User.hasMany(models.Games, {
+        as: 'receivedChallenges', 
+        foreignKey: 'player_two',
+      });
     }
   }
   User.init({
@@ -37,21 +33,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    fullName: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    avatar: {
-      type: DataTypes.STRING,
-    },
     password: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    isPremium: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false
     }
   }, {
     sequelize,

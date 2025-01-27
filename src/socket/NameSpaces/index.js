@@ -1,9 +1,7 @@
-import notificationNamespace from "./notification.namespace"
-import chatNamespace from "./chat.namespace"
+import gameNotificationNamespace from "./notification.namespace"
 
 const initializeNamespace = (socketServer) => {
-    notificationNamespace(socketServer)
-    chatNamespace(socketServer)
+    gameNotificationNamespace(socketServer)
 }
 
 export default initializeNamespace

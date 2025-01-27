@@ -1,20 +1,24 @@
 import { Router } from "express";
-import {addUserPremium, userLoginController, userSignUpController} from '../../controller/user.controller.js'
-import passport from "passport";
-import {isUserAuthenticated} from '../../middlewares/user.midddleware.js'
+import { createGameController, userLoginController, userSignUpController,getGameCodeController, joinGameController,startGameController, gameMoveController,leftGameController} from '../../controller/user.controller.js'
 import { upload } from "../../middlewares/multer.middleware.js";
+import { isUserAuthenticated }from '../../middlewares/user.midddleware.js'
 const router = Router()
 
-router.route('/signup').post(upload.fields([
-  {
-    name: 'avatar',
-    maxCount: 1
-  }
-]),userSignUpController)
+router.route('/signup').post(userSignUpController)
 
 router.route('/login').post(userLoginController)
 
-router.route('/add-premium').put(isUserAuthenticated,addUserPremium)
+router.route('/create-game').post(isUserAuthenticated,createGameController)
+router.route('/get-game-details').get(isUserAuthenticated,getGameCodeController)
+
+router.route('/join-game').post(isUserAuthenticated,joinGameController)
+
+router.route('/start-game').post(isUserAuthenticated,startGameController)
+
+router.route('/game-move').post(isUserAuthenticated,gameMoveController)
+
+router.route('/left-game').post(leftGameController)
+
 
 
 export default router

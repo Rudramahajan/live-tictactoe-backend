@@ -1,10 +1,13 @@
 import db from "../../db/models"
 import { verifyToken } from "../../utils/helpers"
 
-const notificationNamespace = (socketServer) => {
-  const notificationNamespace = socketServer.of('/user-notification')
+const gameNotificationNamespace = (socketServer) => {
+  const notificationNamespace = socketServer.of('/game-update')
   notificationNamespace.use(async(socket,next)=> {
+    const gameId = socket.handshake.query.gameId
     const accessToken = socket.handshake.headers.auth
+    console.log('accessToken -------------------------',accessToken);
+    
     const token = verifyToken(accessToken)
 
     const user = await db.User.findOne({where:{
@@ -12,6 +15,7 @@ const notificationNamespace = (socketServer) => {
     }})
 
     const operator = {}
+    operator['gameId'] = gameId
     operator['user'] = user
     socket.operator = operator
     next()
@@ -19,14 +23,27 @@ const notificationNamespace = (socketServer) => {
   })
   
   notificationNamespace.on('connection',(socket)=>{
-    const user = socket?.operator?.user
-    if(user){
-      console.log(user?.userId);
+    try{
+      const {gameId, user} = socket?.operator
+      console.log('gameId---------------',gameId);
+      
+      socket.join(`game-${gameId}`)
+      console.log('joined ---------------');
+      
+      notificationNamespace.to(`game-${gameId}`).emit("notification", {
+        type: 'joined',
+        gameId: gameId,
+        userDetails:{
+          userId: user?.userId,
+          userName: user?.userName  
+        },
+        message: `Player ${user?.userName} Joined The Game`
+      });
+    }catch(err){
+      console.log(err);
+      
     }
-    socket.join(`user-${user?.userId}`)
-    socket.in(`user-${user?.userId}`).emit("notification","hi");
-    console.log('socket is connected',user?.userId.toString());
   })
 }
 
-export default notificationNamespace
+export default gameNotificationNamespace
